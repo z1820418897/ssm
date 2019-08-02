@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gcrobot.mapper.UserMapper">
+	<!-- 用户注册 -->
+	<insert id="addUser" parameterType="com.gcrobot.bean.User" useGeneratedKeys="true" keyProperty="userId">
+		INSERT INTO userInfo(userName,passWord) VALUES(#{userName},#{passWord});
+	</insert>
+	<!-- 验证用户名是否重复 -->
+	<select id="findUsersCountByUserName" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(1) from userInfo where userName=#{userName}
+	</select>
+	<!-- 查询密码 -->
+	<select id="findPassword" parameterType="java.lang.Integer" resultType="java.lang.String">
+		SELECT password FROM userInfo where userId=#{userId}
+	</select>
+	<!-- 修改密码 -->
+	<update id="editPassword">
+		UPDATE userInfo SET  PASSWORD=#{1} WHERE userId=#{0}
+	</update>
+	<!-- 根据用户账号查询email -->
+	<select id="findEmailByUserName" resultType="com.gcrobot.bean.User">
+		SELECT userId,email FROM userInfo WHERE userName=#{userName}
+	</select>
+	
+	<!-- 修改用户表 中的头像-->
+	<update id="addUserHead">    
+		UPDATE userInfo SET  headUrl=#{1} WHERE userId=#{0} 
+	</update>
+	
+	<!--  修改用户表  所有字段-->
+	<update id="setUserInfo" parameterType="com.gcrobot.bean.User">
+		
+		UPDATE userInfo SET userId=#{userId}
+		<if test="email != null and email !=''">
+		,email=#{email}
+		</if>
+		
+		<if test="nickName != null and nickName !=''">
+		,nickName=#{nickName}
+		</if>
+		WHERE userId=#{userId}
+		
+	</update>
+	
+	
+	<!-- 绑定设备 -->
+	<insert id="bindCat" parameterType="java.lang.Integer">
+		INSERT INTO bindInfo(userId,deviceId) VALUES (#{0},#{1})
+	</insert>
+	
+	<!-- 查询是否已经绑定设备 -->
+	<select id="findBindCat" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM bindInfo WHERE userId=#{0} AND deviceId=#{1}
+	</select>
+	
+	<!-- 根据设备id 查询所有的用户 -->
+	<select id="findUserByCatId" parameterType="java.lang.Integer" resultType="com.gcrobot.bean.User">
+		SELECT userId,userName,nickName,headUrl FROM userInfo WHERE userId IN (SELECT userId FROM bindInfo WHERE deviceId=#{catId})
+	</select>
+	
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+<context:property-placeholder location="classpath:db.properties"/>
+
+<!-- dbcp连接池 -->
+<!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	<property name="driverClassName" value="${jdbc.driver}"></property>
+	<property name="url" value="${jdbc.url}"></property>
+	<property name="username" value="${jdbc.username}"></property>
+	<property name="password" value="${jdbc.password}"></property>
+	<property name="validationQuery" value="SELECT 1"></property>
+	<property name="testOnBorrow" value="false"/>
+	<property name="testWhileIdle" value="true"/>
+	
+	<property name="initialSize" value="3"/>
+	<property name="minIdle" value="3"/>
+	<property name="maxActive" value="30"/>
+	<property name="maxIdle" value="15"/>
+	<property name="maxWait" value="5000"/>
+	<property name="timeBetweenEvictionRunsMillis" value="30000"/>
+	<property name="minEvictableIdleTimeMillis" value="1800000"/>
+	<property name="numTestsPerEvictionRun" value="3"/>
+	 
+</bean> -->
+
+<!-- druid连接池 -->
+
+<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+ <!-- 连接驱动 -->
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+		<property name="filters" value="stat" />
+
+	 <!-- 最大并发连接数 -->  
+       <property name = "maxActive" value = "${maxActive}" />  
+       <!-- 初始化连接数量 -->  
+       <property name = "initialSize" value = "${initialSize}" />  
+       <!-- 配置获取连接等待超时的时间 -->  
+       <property name = "maxWait" value = "${maxWait}" />  
+       <!-- 最小空闲连接数 -->  
+       <property name = "minIdle" value = "${minIdle}" />    
+       <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->  
+       <property name = "timeBetweenEvictionRunsMillis" value ="${timeBetweenEvictionRunsMillis}" />  
+       <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->  
+       <property name = "minEvictableIdleTimeMillis" value ="${minEvictableIdleTimeMillis}" />    
+       <property name = "validationQuery" value = "${validationQuery}" />    
+       <property name = "testWhileIdle" value = "${testWhileIdle}" />    
+       <property name = "testOnBorrow" value = "${testOnBorrow}" />    
+       <property name = "testOnReturn" value = "${testOnReturn}" />    
+       <property name = "maxOpenPreparedStatements" value ="${maxOpenPreparedStatements}" />  
+       <!-- 打开 removeAbandoned 功能 -->  
+       <property name = "removeAbandoned" value = "${removeAbandoned}" />  
+       <!-- 1800 秒，也就是 30 分钟 -->  
+       <property name = "removeAbandonedTimeout" value ="${removeAbandonedTimeout}" />  
+       <!-- 关闭 abanded 连接时输出错误日志 -->     
+       <property name = "logAbandoned" value = "${logAbandoned}" /> 
+</bean>
+
+
+<bean id="SqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	<property name="configLocation" value="classpath:SqlMapperConfig.xml"></property>
+	<property name="dataSource" ref="dataSource"></property>
+</bean>
+
+<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	<property name="basePackage" value="com.gcrobot.mapper"></property>
+</bean>
+
+</beans>

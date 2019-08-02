@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gcrobot.mapper.CatEyeMapper">
+
+<!-- 查询数据总条数 -->
+<select id="findCount" resultType="java.lang.Integer">
+SELECT COUNT(1) FROM deviceInfo;
+</select>
+
+<!-- 分页查询cat数据  -->
+<select id="findCatByPage" parameterType="com.gcrobot.util.PageHelp" resultType="com.gcrobot.bean.Device">
+SELECT deviceId,SN,state FROM deviceInfo  LIMIT #{start},#{end};
+</select>
+
+<!-- 检测数据库中是否已经存在该SN -->
+<select id="findCountBySN" parameterType="java.lang.String" resultType="java.lang.Integer">
+SELECT COUNT(1) FROM deviceInfo where SN=#{SN};
+</select>
+
+<!-- 注册设备 -->
+<insert id="insertCat" parameterType="com.gcrobot.bean.Device" useGeneratedKeys="true" keyProperty="deviceId">
+INSERT INTO deviceInfo(SN,state,deviceName) values(#{SN},#{state},#{deviceName})
+</insert>
+
+<!-- 修改设备信息  暂时没有设备信息可以修改  禁用 -->
+<update id="editCat" parameterType="com.gcrobot.bean.Device">
+UPDATE deviceInfo SET SN=#{SN} WHERE deviceId=#{deviceId}
+</update>
+
+<!-- 修改设备名称 -->
+<update id="editCatName">
+UPDATE deviceInfo SET deviceName=#{1} WHERE deviceId=#{0}
+</update>
+
+<!-- 查询当天报警消息总条数 -->
+<select id="findBaojingCountByCatId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+SELECT COUNT(1) FROM fileInfo WHERE  deviceId=#{catId} AND TO_DAYS(fileTime) =TO_DAYS(NOW()) 
+</select>
+
+<!-- 查询访客记录总条数 -->
+<select id="findFangKeCountByCatId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+SELECT COUNT(1) FROM visitorInfo WHERE  deviceId=#{catId} AND TO_DAYS(fileTime) =TO_DAYS(NOW()) 
+</select>
+
+
+<update id="deleteCat" parameterType="java.util.List">
+update deviceInfo set state=0
+		<where>
+			<foreach item="deviceId" collection="list" open="deviceId in(" separator="," close=")">
+				#{deviceId}
+			</foreach>
+		</where>
+
+</update>
+
+
+
+
+</mapper>

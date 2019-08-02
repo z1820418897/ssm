@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gcrobot.mapper.WebMapper">
+
+	<select id="findRootNameIsEmpty"
+		parameterType="java.lang.String" resultType="com.gcrobot.bean.Root">
+		SELECT
+		rootId,rootName,password from rootInfo where rootName=#{username}
+	</select>
+
+	<select id="findCount" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM versionInfo;
+
+	</select>
+
+	<select id="findVersionByPage"
+		parameterType="com.gcrobot.util.PageHelp"
+		resultType="com.gcrobot.bean.Version">
+		SELECT 
+		versionId,versionCode,versionName,fileName,time,des FROM versionInfo 
+		LIMIT
+		#{start},#{end};
+	</select>
+
+
+	<insert id="saveVersion" parameterType="com.gcrobot.bean.Version">
+			INSERT INTO versionInfo(versionCode,versionName,fileName,time,des) 
+			VALUES (#{versionCode},#{versionName},#{fileName},#{time},#{des});
+	</insert>
+
+	
+	<delete id="deleteVersion" parameterType="java.util.List" >
+		delete from versionInfo
+		<where>
+			<foreach item="versionId" collection="list" open="versionId in(" separator="," close=")">
+				#{versionId}
+			</foreach>
+		</where>
+	</delete>
+	
+	<select id="findFiles" parameterType="java.util.List" resultType="java.lang.String">
+		SELECT fileName FROM versionInfo
+		<where>
+			<foreach item="versionId" collection="list" open="versionId in(" separator="," close=")">
+				#{versionId}
+			</foreach>
+		</where>
+	</select>
+	
+</mapper>

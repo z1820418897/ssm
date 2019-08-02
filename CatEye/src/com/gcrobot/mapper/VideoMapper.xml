@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gcrobot.mapper.VideoMapper">
+<!--视频上传  video表的增加 -->
+<insert id="addVideo" parameterType="com.gcrobot.bean.Video">
+insert into videoInfo(deviceId,videoName,videoTime,img) values(#{deviceId},#{videoName},#{videoTime},#{img});
+</insert>
+
+<!-- 根据日期的年月查询攒在日期的天数 -->
+<!-- <select id="findVideoExistDate" parameterType="java.lang.Integer" resultType="java.lang.String" >
+SELECT DISTINCT DATE_FORMAT(videoTime,'%d') videoTime FROM videoInfo WHERE deviceId=#{0} AND MONTH(videoTime)=#{2} AND YEAR(videoTime)=#{1}
+</select> -->
+
+<!-- 根据日期的年月查询攒在日期的天数 -->
+<select id="findVideoExistDate" parameterType="java.lang.Integer" resultType="java.lang.String" >
+SELECT DISTINCT DATE_FORMAT(fileTime,'%d') fileTime FROM fileInfo WHERE deviceId=#{0} AND MONTH(fileTime)=#{2} AND YEAR(fileTime)=#{1}
+</select>
+
+<!-- 根据日期的天数查询video数据 -->
+<!-- <select id="findVideoByDate" parameterType="java.lang.Integer" resultType="com.gcrobot.bean.Video">
+SELECT videoId,deviceId,videoName,videoTime,img FROM videoInfo WHERE deviceId=#{0} AND MONTH(videoTime)=#{2} AND DAY(videoTime)=#{3} AND YEAR(videoTime)=#{1} order by videoTime DESC
+</select> -->
+
+<select id="findVideoByDate" parameterType="java.lang.Integer" resultType="com.gcrobot.bean.File">
+SELECT fileId,deviceId,type,fileName,fileTime,img FROM fileInfo WHERE deviceId=#{0} AND MONTH(fileTime)=#{2} AND DAY(fileTime)=#{3} AND YEAR(fileTime)=#{1} order by fileTime DESC
+</select>
+
+<delete id="delVideo" parameterType="java.util.List">
+DELETE FROM fileInfo WHERE 1=2   
+<foreach collection="list" item="id" open="or videoId in (0," separator="," close=")">
+#{id}
+</foreach>
+</delete>
+
+<insert id="addFile" parameterType="com.gcrobot.bean.File" >
+insert into fileInfo(deviceId,type,fileName,fileTime,img) values(#{deviceId},#{type},#{fileName},#{fileTime},#{img});
+</insert>
+
+<insert id="addVisitor" parameterType="com.gcrobot.bean.Visitor">
+insert into visitorInfo(deviceId,fileName,fileTime) values(#{deviceId},#{fileName},#{fileTime});
+</insert>
+
+
+<select id="findVisitorByDate" parameterType="java.lang.Integer"  resultType="com.gcrobot.bean.Visitor">
+SELECT visitorId,deviceId,fileName,fileTime FROM visitorInfo WHERE deviceId=#{0} AND MONTH(fileTime)=#{2} AND DAY(fileTime)=#{3} AND YEAR(fileTime)=#{1} ORDER BY fileTime DESC
+</select>
+
+<select id="findFangKeDay" parameterType="java.lang.Integer" resultType="java.lang.String" >
+SELECT DISTINCT DATE_FORMAT(fileTime,'%d') fileTime FROM visitorInfo WHERE deviceId=#{0} AND MONTH(fileTime)=#{2} AND YEAR(fileTime)=#{1}
+</select>
+
+<delete id="delVisitor" parameterType="java.util.List">
+DELETE FROM visitorInfo WHERE 1=2   
+<foreach collection="list" item="id" open="or visitorId in (0," separator="," close=")">
+#{id}
+</foreach>
+</delete>
+
+
+
+</mapper> 
